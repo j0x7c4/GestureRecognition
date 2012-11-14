@@ -1,30 +1,32 @@
 /*
 Sample code for using SimKinect
 */
-#include "SimpleKinectReader.h" 
+#include <SimpleKinectReader.h> 
+#include <svm.h>
 #include <iostream>
 #include <cv.h>
-#include <ml.h>
 #include <highgui.h>
 
 using namespace std;
 using namespace cv;
 
-//edit this path if you want to read data from oni file
-char* file_path = "D:/2_side/SideBin01.oni";
-//edit this path if you want to save oni file
-const char* save_path = "sample.oni";
+const char* svm_bottle_model = "E:/source/gestureRecognition/svm_models/bottle.model";
+
 //default width and height
 int video_size_width = 640;
 int video_size_height = 480;
 
 int detect_window_size = 64;
 int ROI_size = 160;
-int detectObject ( const Mat& image, const CvSVM& svm );
-int main ( ) {
-	CvSVM svm = CvSVM();
+int detectObject ( const Mat& image, const svm_model* svm_model );
 
-	svm.load("E:/source/gestureRecognition/objectDetector/SVM_DATA.xml");
+int main ( ) {
+	svm_model* svm;
+	if ( (svm = svm_load_model(svm_bottle_model)) == NULL ) {
+		printf("Fail to load svm model %s\n",svm_bottle_model);
+		return 1;
+	}
+
 	unsigned char* depth_data=NULL; 
 	unsigned char* color_data=NULL;
 	int* depth_map=NULL;
@@ -66,9 +68,9 @@ int main ( ) {
 				Mat imageROI = color_img(Range(row_begin,row_end),Range(col_begin,col_end));
 				Mat smallImageROI;
 				resize(imageROI,smallImageROI,cvSize(ROI_size/2,ROI_size/2));
-				imshow("small",smallImageROI);
-				waitKey(10);
-				//rectangle(color_img,cvPoint(col_begin,row_begin),cvPoint(col_end,row_end),cvScalar(255,255,0),2);
+				//imshow("small",smallImageROI);
+				//waitKey(10);
+				rectangle(color_img,cvPoint(col_begin,row_begin),cvPoint(col_end,row_end),cvScalar(255,255,0),2);
 				vector<Rect> BBs; 
 				
 				for ( int i=0 ; i<imageROI.rows-detect_window_size ; i+=50 ) {
@@ -126,19 +128,23 @@ int main ( ) {
 	}
 	//Stop record before exit
 	//sensor.StopRecord();
+	free(svm);
+	return 0;
 }
 
-int detectObject ( const Mat& image, const CvSVM& svm ) {
+int detectObject ( const Mat& image, const svm_model* svm_model ) {
 	HOGDescriptor *hog=new HOGDescriptor(cvSize(64,64),cvSize(16,16),cvSize(8,8),cvSize(8,8),9);   
-  vector<float>descriptors;   
-  hog->compute(image, descriptors,Size(1,1), Size(0,0)); 
-  //cout<<"HOG dims: "<<descriptors.size()<<endl;  
-  CvMat* SVMtrainMat=cvCreateMat(1,descriptors.size(),CV_32FC1);  
-  int n=0;  
-  for(vector<float>::iterator iter=descriptors.begin();iter!=descriptors.end();iter++) {  
-		cvmSet(SVMtrainMat,0,n,*iter);  
-    n++;  
+  vector<float>hog_features;
+	double prob;
+	int ret;
+  hog->compute(image, hog_features,Size(1,1), Size(0,0)); 
+	struct svm_node *x = (struct svm_node *)malloc((hog_features.size()+1)*sizeof(struct svm_node)); 
+	for ( int i=0 ; i<hog_features.size() ; i++ ) {
+		x[i].index=i;
+		x[i].value=hog_features[i];
 	}
-  int ret = svm.predict(SVMtrainMat);
+	x[hog_features.size()].index = -1;
+	ret = svm_predict(svm_model,x);
+	free(x);
 	return ret;
 }

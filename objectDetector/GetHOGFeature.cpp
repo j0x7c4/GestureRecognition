@@ -53,10 +53,10 @@ int main(int argc, char** argv)
 
 		resize(src,trainImg,cvSize(64,64));    
 		HOGDescriptor hog(cvSize(64,64),cvSize(16,16),cvSize(8,8),cvSize(8,8),9);    
-		vector<float>descriptors;   
-		hog.compute(trainImg, descriptors,Size(1,1), Size(0,0));   
-		cout<<"HOG dims: "<<descriptors.size()<<endl; 
-		saveFeature(img_catg[i],descriptors,"train_data.txt");
+		vector<float>hog_features;   
+		hog.compute(trainImg, hog_features,Size(1,1), Size(0,0));   
+		cout<<"HOG dims: "<<hog_features.size()<<endl; 
+		saveFeature(img_catg[i],hog_features,"train_data.txt");
 		cout<<" end processing "<<img_path[i].c_str()<<" "<<img_catg[i]<<endl;  
 	}  
 
