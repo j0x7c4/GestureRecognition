@@ -26,7 +26,6 @@ int main ( ) {
 		printf("Fail to load svm model %s\n",svm_bottle_model);
 		return 1;
 	}
-
 	unsigned char* depth_data=NULL; 
 	unsigned char* color_data=NULL;
 	int* depth_map=NULL;
@@ -101,14 +100,15 @@ int main ( ) {
 					//DrawUser(users[i],color_img);
 				}
 
-				t = getTickFrequency()/((double)getTickCount()-t);
-				sprintf(buffer,"%d",(int)t);
-				putText(color_img,string(buffer),cvPoint(10,50),CV_FONT_HERSHEY_SIMPLEX,1,CV_RGB(0,0,0),2);
-				putText(depth_img,string(buffer),cvPoint(10,50),CV_FONT_HERSHEY_SIMPLEX,1,CV_RGB(255,255,255),2);
+				
 			}
 			catch ( Exception e ) {
 			}
 		}
+		t = getTickFrequency()/((double)getTickCount()-t);
+		sprintf(buffer,"%d",(int)t);
+		putText(color_img,string(buffer),cvPoint(10,50),CV_FONT_HERSHEY_SIMPLEX,1,CV_RGB(0,0,0),2);
+		putText(depth_img,string(buffer),cvPoint(10,50),CV_FONT_HERSHEY_SIMPLEX,1,CV_RGB(255,255,255),2);
 		imshow("COLOR",color_img);
 		imshow("DEPTH",depth_img);
 		char time_buf[10];
