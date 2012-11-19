@@ -45,8 +45,8 @@ int main ( ) {
 	depth_data = new unsigned char[video_size_width*video_size_height*3];
 	depth_map = new int[video_size_width*video_size_height];
 	int frame_cnt =0 ;
-	color_writer.open("rgb.avi",CV_FOURCC('D','I','V','X'),30,cvSize(video_size_width,video_size_height),true);
-	depth_writer.open("dep.avi",CV_FOURCC('D','I','V','X'),30,cvSize(video_size_width,video_size_height),true);
+	//color_writer.open("rgb.avi",CV_FOURCC('D','I','V','X'),30,cvSize(video_size_width,video_size_height),true);
+	//depth_writer.open("dep.avi",CV_FOURCC('D','I','V','X'),30,cvSize(video_size_width,video_size_height),true);
 	while ( !quit ) {
 		double t = (double)getTickCount(); //for calc FPS
 		//Get next frame
@@ -77,8 +77,8 @@ int main ( ) {
 		putText(depth_img,string(buffer),cvPoint(10,50),CV_FONT_HERSHEY_SIMPLEX,1,CV_RGB(255,255,255),2);
 		imshow("COLOR",color_img);
 		imshow("DEPTH",depth_img);
-		color_writer<<color_img;
-		depth_writer<<depth_img;
+		//color_writer<<color_img;
+		//depth_writer<<depth_img;
 		char key = waitKey(30);
 		switch (key) {
 		case 27: 
