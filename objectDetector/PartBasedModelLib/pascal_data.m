@@ -26,6 +26,10 @@ catch
     diff = [rec.objects(clsinds).difficult];
     clsinds(diff) = [];
     for j = clsinds(:)'
+      % prevent crash when no coresponding image
+      if exist([VOCopts.datadir rec.imgname]) == 0 
+          continue; 
+      end
       numpos = numpos+1;
       pos(numpos).im = [VOCopts.datadir rec.imgname];
       bbox = rec.objects(j).bbox;

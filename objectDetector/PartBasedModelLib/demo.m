@@ -1,10 +1,10 @@
 function demo()
 
 load('VOC2007/car_final');
-test('000034.jpg', model);
+test('car_test.jpg', model);
 
 load('INRIA/inriaperson_final');
-test('000061.jpg', model);
+test('people_test.jpg', model);
 
 load('VOC2007/bicycle_final');
 test('000084.jpg', model);
